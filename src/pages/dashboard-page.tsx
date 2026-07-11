@@ -10,7 +10,7 @@ const DashboardPage = () => {
 
   const handleLogout = () => {
     clearSession();
-    void navigate("/login", { replace: true });
+    void navigate("/signin", { replace: true });
   };
 
   return (

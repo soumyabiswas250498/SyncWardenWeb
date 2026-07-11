@@ -6,7 +6,7 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/signin" replace />;
   }
 
   return children;

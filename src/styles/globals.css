@@ -128,3 +128,30 @@
     @apply font-sans;
   }
 }
+
+/* SyncWarden auth screens: scoped brand palette (see .design-sync import "SyncWarden Auth"). */
+.sw-auth {
+  --background: oklch(0.975 0.006 85);
+  --foreground: oklch(0.22 0.015 85);
+  --primary: oklch(0.55 0.15 250);
+  --primary-foreground: oklch(0.99 0.003 85);
+  --muted-foreground: oklch(0.5 0.02 85);
+  --border: oklch(0.88 0.008 85);
+  --input: oklch(0.88 0.008 85);
+  --ring: oklch(0.55 0.15 250);
+}
+
+.sw-shield {
+  clip-path: polygon(50% 2%, 92% 18%, 92% 54%, 50% 98%, 8% 54%, 8% 18%);
+}
+
+@keyframes sw-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

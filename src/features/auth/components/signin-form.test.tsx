@@ -2,17 +2,17 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/test/test-utils";
-import { LoginForm } from "./login-form";
+import { SigninForm } from "./signin-form";
 import { useAuthStore } from "../store/auth-store";
 
-describe("LoginForm", () => {
+describe("SigninForm", () => {
   beforeEach(() => {
     useAuthStore.getState().clearSession();
   });
 
   it("shows validation errors for invalid input", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm />);
+    renderWithProviders(<SigninForm />);
 
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
@@ -22,7 +22,7 @@ describe("LoginForm", () => {
 
   it("logs in and stores the session on valid submit", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<LoginForm />);
+    renderWithProviders(<SigninForm />);
 
     await user.type(screen.getByLabelText(/email/i), "user@example.com");
     await user.type(screen.getByLabelText(/password/i), "StrongPass123");
