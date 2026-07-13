@@ -20,6 +20,8 @@ import {
 export const SigninForm = () => {
     const navigate = useNavigate();
     const setSession = useAuthStore((state) => state.setSession);
+    const sessionNotice = useAuthStore((state) => state.sessionNotice);
+    const setSessionNotice = useAuthStore((state) => state.setSessionNotice);
     const signinMutation = useSignin();
 
     const {
@@ -35,7 +37,10 @@ export const SigninForm = () => {
         signinMutation.mutate(values, {
             onSuccess: (data) => {
                 setSession({ accessToken: data.accessToken, refreshToken: data.refreshToken }, data.user);
+                setSessionNotice(null);
                 toast.success("Signed in successfully");
+                // The dashboard is device-gated: RequireDevice sends the user to
+                // device registration when this browser isn't a device yet.
                 void navigate("/dashboard", { replace: true });
             },
             onError: (error) => {
@@ -48,6 +53,12 @@ export const SigninForm = () => {
         <div className="animate-[sw-fade-in_0.35s_ease]">
             <h1 className="mb-1.5 text-[26px] font-bold tracking-tight">Welcome back</h1>
             <p className="mb-7 text-[14.5px] text-muted-foreground">Sign in to manage your devices and transfers.</p>
+
+            {sessionNotice && (
+                <div className="mb-5 rounded-xl border border-[oklch(0.75_0.15_80_/_0.3)] bg-[oklch(0.75_0.15_80_/_0.12)] p-3.5 text-[13px] leading-relaxed text-[oklch(0.42_0.09_80)]">
+                    {sessionNotice}
+                </div>
+            )}
 
             <form onSubmit={(event) => void onSubmit(event)} noValidate>
                 <FieldGroup>

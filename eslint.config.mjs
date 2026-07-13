@@ -16,6 +16,8 @@ export default tseslint.config(
       "eslint.config.mjs",
       "vite.config.ts",
       "playwright.config.ts",
+      "scripts/**",
+      "design-reference/**",
     ],
   },
   js.configs.recommended,

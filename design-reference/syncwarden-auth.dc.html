@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @keyframes sw-spin { to { transform: rotate(360deg); } }
+    @keyframes sw-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    body { margin: 0; background: oklch(0.975 0.006 85); }
+    .sw-shield { clip-path: polygon(50% 2%, 92% 18%, 92% 54%, 50% 98%, 8% 54%, 8% 18%); }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; width:100%; display:flex; font-family:'Inter',sans-serif; background:oklch(0.975 0.006 85); color:oklch(0.22 0.015 85);">
+
+  <!-- Brand panel (desktop only) -->
+  <div style="{{ brandPanelStyle }}">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="width:34px; height:34px; border-radius:9px; background:oklch(0.98 0.005 85 / 0.14); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <div class="sw-shield" style="width:19px; height:21px; background:oklch(0.99 0.003 85); display:flex; align-items:center; justify-content:center; padding-bottom:2px; box-sizing:border-box;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="oklch(0.3 0.045 260)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 15V4"/>
+            <path d="M7 8.5L12 3.5L17 8.5"/>
+            <path d="M4.5 14v3.5a2 2 0 002 2h11a2 2 0 002-2V14"/>
+          </svg>
+        </div>
+      </div>
+      <span style="font-size:19px; font-weight:700; color:oklch(0.98 0.005 85); letter-spacing:-0.01em;">SyncWarden</span>
+    </div>
+
+    <div style="max-width:380px;">
+      <div style="font-size:30px; font-weight:700; line-height:1.25; color:oklch(0.98 0.005 85); letter-spacing:-0.01em; margin-bottom:14px;">
+        Your files and clipboard, everywhere you are.
+      </div>
+      <div style="font-size:15px; line-height:1.6; color:oklch(0.82 0.02 250);">
+        Self-hosted sync across your phone, laptop, and browser — fast local transfers when you're on the same network, secure delivery when you're not.
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:10px; color:oklch(0.88 0.02 250); font-size:13.5px;">
+        <div style="width:7px; height:7px; border-radius:50%; background:oklch(0.72 0.17 145); flex-shrink:0;"></div>
+        Peer-to-peer transfer on your local network
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; color:oklch(0.88 0.02 250); font-size:13.5px;">
+        <div style="width:7px; height:7px; border-radius:50%; background:oklch(0.72 0.17 145); flex-shrink:0;"></div>
+        End-to-end control — you own the backend
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; color:oklch(0.88 0.02 250); font-size:13.5px;">
+        <div style="width:7px; height:7px; border-radius:50%; background:oklch(0.72 0.17 145); flex-shrink:0;"></div>
+        Works with Chrome, Android, and iOS
+      </div>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 20px; min-width:0;">
+    <div style="width:100%; max-width:400px;">
+
+      <!-- Mobile brand mark -->
+      <div style="{{ mobileLogoStyle }}">
+        <div style="width:30px; height:30px; border-radius:8px; background:linear-gradient(155deg, oklch(0.6 0.15 250), oklch(0.42 0.13 258)); display:flex; align-items:center; justify-content:center;">
+          <div class="sw-shield" style="width:17px; height:19px; background:oklch(0.99 0.003 85); display:flex; align-items:center; justify-content:center; padding-bottom:2px; box-sizing:border-box;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="oklch(0.42 0.13 258)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15V4"/>
+              <path d="M7 8.5L12 3.5L17 8.5"/>
+              <path d="M4.5 14v3.5a2 2 0 002 2h11a2 2 0 002-2V14"/>
+            </svg>
+          </div>
+        </div>
+        <span style="font-size:17px; font-weight:700; letter-spacing:-0.01em;">SyncWarden</span>
+      </div>
+
+      <sc-if value="{{ isSignin }}">
+        <div style="animation:sw-fade-in 0.35s ease;">
+          <div style="font-size:26px; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px;">Welcome back</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px;">Sign in to manage your devices and transfers.</div>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:oklch(0.35 0.02 85);">Email</label>
+          <input type="email" placeholder="you@example.com" value="{{ email }}" onChange="{{ onEmailChange }}" style="{{ emailFieldStyle }}" />
+          <sc-if value="{{ errors.email }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.email }}</div>
+          </sc-if>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; margin-bottom:6px;">
+            <label style="font-size:13px; font-weight:600; color:oklch(0.35 0.02 85);">Password</label>
+            <div onClick="{{ goForgot }}" style="font-size:13px; font-weight:600; color:oklch(0.55 0.15 250); cursor:pointer;">Forgot password?</div>
+          </div>
+          <div style="position:relative;">
+            <input type="{{ passwordInputType }}" placeholder="••••••••" value="{{ password }}" onChange="{{ onPasswordChange }}" style="{{ passwordFieldStyle }}" />
+            <div onClick="{{ toggleShowPassword }}" style="{{ eyeButtonStyle }}">
+              <sc-if value="{{ showPassword }}" hint-placeholder-val="{{ false }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 5.2A10.6 10.6 0 0112 5c6 0 10 7 10 7a17.7 17.7 0 01-3.2 3.9M6.5 6.5A17.6 17.6 0 002 12s4 7 10 7a10 10 0 004.2-.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 9.8a3 3 0 004.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ !showPassword }}" hint-placeholder-val="{{ true }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ errors.password }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.password }}</div>
+          </sc-if>
+
+          <button onClick="{{ submitSignin }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ spinnerStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+              Sign in
+            </sc-if>
+          </button>
+
+          <div style="text-align:center; font-size:14px; color:oklch(0.5 0.02 85); margin-top:22px;">
+            Don't have an account? <span onClick="{{ goSignup }}" style="color:oklch(0.55 0.15 250); font-weight:600; cursor:pointer;">Sign up</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDeviceChoice }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease;">
+          <div style="font-size:26px; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px;">Register this device</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:24px; line-height:1.5;">
+            You're signing in from <span style="font-weight:600; color:oklch(0.3 0.02 85);">{{ detectedDeviceLabel }}</span> for the first time. Give it a name and icon.
+          </div>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:oklch(0.35 0.02 85);">Device icon</label>
+          <div style="display:flex; gap:8px; margin-bottom:16px;">
+            <sc-for list="{{ deviceIconOptions }}" as="iconOpt" hint-placeholder-count="5">
+              <div onClick="{{ iconOpt.onSelect }}" style="{{ iconOpt.tileStyle }}">
+                <sc-if value="{{ iconOpt.isLaptop }}" hint-placeholder-val="{{ false }}">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ iconOpt.strokeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg>
+                </sc-if>
+                <sc-if value="{{ iconOpt.isDesktop }}" hint-placeholder-val="{{ false }}">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ iconOpt.strokeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16v4"/></svg>
+                </sc-if>
+                <sc-if value="{{ iconOpt.isPhone }}" hint-placeholder-val="{{ false }}">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ iconOpt.strokeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.2h2"/></svg>
+                </sc-if>
+                <sc-if value="{{ iconOpt.isTablet }}" hint-placeholder-val="{{ false }}">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ iconOpt.strokeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M11.5 18.2h1"/></svg>
+                </sc-if>
+                <sc-if value="{{ iconOpt.isBrowser }}" hint-placeholder-val="{{ false }}">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ iconOpt.strokeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:oklch(0.35 0.02 85);">Device name</label>
+          <input type="text" placeholder="e.g. Work Laptop" value="{{ deviceName }}" onChange="{{ onDeviceNameChange }}" style="{{ deviceNameFieldStyle }}" />
+          <sc-if value="{{ errors.deviceName }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.deviceName }}</div>
+          </sc-if>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; padding:14px 16px; border-radius:12px; border:1.5px solid oklch(0.88 0.008 85);">
+            <div>
+              <div style="font-size:14px; font-weight:700; margin-bottom:3px;">Mark as temporary device</div>
+              <div style="font-size:12.5px; color:oklch(0.5 0.02 85); line-height:1.45;">For devices you don't own. Limited access, expires automatically, doesn't use a device slot.</div>
+            </div>
+            <div onClick="{{ toggleTemporary }}" style="{{ toggleTrackStyle }}">
+              <div style="{{ toggleThumbStyle }}"></div>
+            </div>
+          </div>
+
+          <sc-if value="{{ isTemporarySelected }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;">
+              <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:oklch(0.35 0.02 85);">Expires after</label>
+              <select value="{{ tempDuration }}" onChange="{{ onTempDurationChange }}" style="{{ tempDurationFieldStyle }}">
+                <sc-for list="{{ durationOptions }}" as="opt" hint-placeholder-count="3">
+                  <option value="{{ opt.value }}">{{ opt.label }}</option>
+                </sc-for>
+              </select>
+
+              <sc-if value="{{ hasExistingTemp }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; align-items:flex-start; gap:10px; margin-top:12px; padding:11px 13px; border-radius:10px; background:oklch(0.75 0.15 80 / 0.12); border:1px solid oklch(0.75 0.15 80 / 0.3);">
+                  <div style="width:16px; height:16px; border-radius:50%; background:oklch(0.55 0.13 80 / 0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">
+                    <span style="color:oklch(0.5 0.13 80); font-size:10px; font-weight:800;">!</span>
+                  </div>
+                  <div style="font-size:12.5px; line-height:1.5; color:oklch(0.42 0.09 80);">
+                    You already have an active temporary device (<span style="font-weight:700;">{{ existingTempDeviceName }}</span>). Continuing will end its access.
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ !isTemporarySelected }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:12px; color:oklch(0.55 0.02 85); margin-top:12px; font-weight:600;">Uses 1 of your device slots · {{ permanentUsed }}/{{ permanentLimit }} used</div>
+          </sc-if>
+
+          <button onClick="{{ confirmDeviceChoice }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ spinnerStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+              Continue
+            </sc-if>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDeviceChoiceDone }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease; text-align:center; padding:20px 0;">
+          <div style="width:56px; height:56px; border-radius:50%; background:oklch(0.72 0.17 145 / 0.14); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+            <div style="width:22px; height:12px; border-left:3px solid oklch(0.5 0.16 145); border-bottom:3px solid oklch(0.5 0.16 145); transform:rotate(-45deg) translate(2px,-2px);"></div>
+          </div>
+          <div style="font-size:24px; font-weight:700; letter-spacing:-0.01em; margin-bottom:8px;">{{ deviceChoiceDoneTitle }}</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px; line-height:1.5;">{{ deviceChoiceDoneSubtitle }}</div>
+          <a href="Dashboard.dc.html" style="{{ primaryButtonAnchorStyle }}">Go to dashboard</a>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease;">
+          <div style="font-size:26px; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px;">Create your account</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px;">Set up SyncWarden to start syncing your devices.</div>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:oklch(0.35 0.02 85);">Full name</label>
+          <input type="text" placeholder="Jordan Lee" value="{{ name }}" onChange="{{ onNameChange }}" style="{{ nameFieldStyle }}" />
+          <sc-if value="{{ errors.name }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.name }}</div>
+          </sc-if>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-top:16px; margin-bottom:6px; color:oklch(0.35 0.02 85);">Email</label>
+          <input type="email" placeholder="you@example.com" value="{{ email }}" onChange="{{ onEmailChange }}" style="{{ emailFieldStyle }}" />
+          <sc-if value="{{ errors.email }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.email }}</div>
+          </sc-if>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-top:16px; margin-bottom:6px; color:oklch(0.35 0.02 85);">Phone number</label>
+          <div style="display:flex; gap:8px;">
+            <select value="{{ countryCode }}" onChange="{{ onCountryCodeChange }}" style="{{ countryCodeFieldStyle }}">
+              <sc-for list="{{ countryOptions }}" as="c" hint-placeholder-count="6">
+                <option value="{{ c.code }}">{{ c.label }}</option>
+              </sc-for>
+            </select>
+            <input type="tel" placeholder="555 123 4567" value="{{ phone }}" onChange="{{ onPhoneChange }}" style="{{ phoneFieldStyle }}" />
+          </div>
+          <sc-if value="{{ errors.phone }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.phone }}</div>
+          </sc-if>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-top:16px; margin-bottom:6px; color:oklch(0.35 0.02 85);">Password</label>
+          <div style="position:relative;">
+            <input type="{{ passwordInputType }}" placeholder="At least 8 characters" value="{{ password }}" onChange="{{ onPasswordChange }}" style="{{ passwordFieldStyle }}" />
+            <div onClick="{{ toggleShowPassword }}" style="{{ eyeButtonStyle }}">
+              <sc-if value="{{ showPassword }}" hint-placeholder-val="{{ false }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 5.2A10.6 10.6 0 0112 5c6 0 10 7 10 7a17.7 17.7 0 01-3.2 3.9M6.5 6.5A17.6 17.6 0 002 12s4 7 10 7a10 10 0 004.2-.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 9.8a3 3 0 004.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ !showPassword }}" hint-placeholder-val="{{ true }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ errors.password }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.password }}</div>
+          </sc-if>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-top:16px; margin-bottom:6px; color:oklch(0.35 0.02 85);">Confirm password</label>
+          <div style="position:relative;">
+            <input type="{{ confirmPasswordInputType }}" placeholder="••••••••" value="{{ confirmPassword }}" onChange="{{ onConfirmPasswordChange }}" style="{{ confirmFieldStyle }}" />
+            <div onClick="{{ toggleShowConfirmPassword }}" style="{{ eyeButtonStyle }}">
+              <sc-if value="{{ showConfirmPassword }}" hint-placeholder-val="{{ false }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 5.2A10.6 10.6 0 0112 5c6 0 10 7 10 7a17.7 17.7 0 01-3.2 3.9M6.5 6.5A17.6 17.6 0 002 12s4 7 10 7a10 10 0 004.2-.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 9.8a3 3 0 004.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ !showConfirmPassword }}" hint-placeholder-val="{{ true }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ errors.confirmPassword }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.confirmPassword }}</div>
+          </sc-if>
+
+          <button onClick="{{ submitSignup }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ spinnerStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+              Create account
+            </sc-if>
+          </button>
+
+          <div style="font-size:12.5px; color:oklch(0.55 0.02 85); text-align:center; margin-top:14px; line-height:1.5;">
+            We'll send a one-time code to your email to verify it's you.
+          </div>
+
+          <div style="text-align:center; font-size:14px; color:oklch(0.5 0.02 85); margin-top:18px;">
+            Already have an account? <span onClick="{{ goSignin }}" style="color:oklch(0.55 0.15 250); font-weight:600; cursor:pointer;">Sign in</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isForgot }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease;">
+          <div onClick="{{ goSignin }}" style="{{ backLinkStyle }}">← Back to sign in</div>
+          <div style="font-size:26px; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px;">Reset your password</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px;">Enter your account email and we'll send a verification code.</div>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:oklch(0.35 0.02 85);">Email</label>
+          <input type="email" placeholder="you@example.com" value="{{ email }}" onChange="{{ onEmailChange }}" style="{{ emailFieldStyle }}" />
+          <sc-if value="{{ errors.email }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.email }}</div>
+          </sc-if>
+
+          <button onClick="{{ submitForgot }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ spinnerStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+              Send code
+            </sc-if>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOtp }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease;">
+          <div onClick="{{ backFromOtp }}" style="{{ backLinkStyle }}">← Back</div>
+          <div style="font-size:26px; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px;">Enter verification code</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px; line-height:1.5;">
+            We sent a 6-digit code to <span style="font-weight:600; color:oklch(0.3 0.02 85);">{{ email }}</span>
+          </div>
+
+          <div style="display:flex; gap:8px; justify-content:space-between;">
+            <sc-for list="{{ otpBoxes }}" as="box" hint-placeholder-count="6">
+              <input
+                type="text"
+                inputmode="numeric"
+                maxlength="1"
+                value="{{ box.value }}"
+                onChange="{{ box.onChange }}"
+                id="{{ box.id }}"
+                style="{{ box.style }}" />
+            </sc-for>
+          </div>
+          <sc-if value="{{ errors.otp }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}; margin-top:10px;">{{ errors.otp }}</div>
+          </sc-if>
+
+          <button onClick="{{ submitOtp }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ spinnerStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+              Verify
+            </sc-if>
+          </button>
+
+          <div style="text-align:center; font-size:13.5px; color:oklch(0.5 0.02 85); margin-top:18px;">
+            <sc-if value="{{ resendReady }}" hint-placeholder-val="{{ false }}">
+              <span onClick="{{ resendOtp }}" style="color:oklch(0.55 0.15 250); font-weight:600; cursor:pointer;">Resend code</span>
+            </sc-if>
+            <sc-if value="{{ !resendReady }}" hint-placeholder-val="{{ true }}">
+              Resend code in <span style="font-weight:600; color:oklch(0.35 0.02 85);">{{ resendTimerLabel }}</span>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isReset }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease;">
+          <div style="font-size:26px; font-weight:700; letter-spacing:-0.01em; margin-bottom:6px;">Set a new password</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px;">Choose a new password for your account.</div>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:oklch(0.35 0.02 85);">New password</label>
+          <div style="position:relative;">
+            <input type="{{ passwordInputType }}" placeholder="At least 8 characters" value="{{ password }}" onChange="{{ onPasswordChange }}" style="{{ passwordFieldStyle }}" />
+            <div onClick="{{ toggleShowPassword }}" style="{{ eyeButtonStyle }}">
+              <sc-if value="{{ showPassword }}" hint-placeholder-val="{{ false }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 5.2A10.6 10.6 0 0112 5c6 0 10 7 10 7a17.7 17.7 0 01-3.2 3.9M6.5 6.5A17.6 17.6 0 002 12s4 7 10 7a10 10 0 004.2-.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 9.8a3 3 0 004.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ !showPassword }}" hint-placeholder-val="{{ true }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ errors.password }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.password }}</div>
+          </sc-if>
+
+          <label style="display:block; font-size:13px; font-weight:600; margin-top:16px; margin-bottom:6px; color:oklch(0.35 0.02 85);">Confirm new password</label>
+          <div style="position:relative;">
+            <input type="{{ confirmPasswordInputType }}" placeholder="••••••••" value="{{ confirmPassword }}" onChange="{{ onConfirmPasswordChange }}" style="{{ confirmFieldStyle }}" />
+            <div onClick="{{ toggleShowConfirmPassword }}" style="{{ eyeButtonStyle }}">
+              <sc-if value="{{ showConfirmPassword }}" hint-placeholder-val="{{ false }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.6 5.2A10.6 10.6 0 0112 5c6 0 10 7 10 7a17.7 17.7 0 01-3.2 3.9M6.5 6.5A17.6 17.6 0 002 12s4 7 10 7a10 10 0 004.2-.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 9.8a3 3 0 004.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ !showConfirmPassword }}" hint-placeholder-val="{{ true }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              </sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ errors.confirmPassword }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ errorTextStyle }}">{{ errors.confirmPassword }}</div>
+          </sc-if>
+
+          <button onClick="{{ submitReset }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ spinnerStyle }}"></div>
+            </sc-if>
+            <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+              Update password
+            </sc-if>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSuccess }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease; text-align:center; padding:20px 0;">
+          <div style="width:56px; height:56px; border-radius:50%; background:oklch(0.72 0.17 145 / 0.14); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+            <div style="width:22px; height:12px; border-left:3px solid oklch(0.5 0.16 145); border-bottom:3px solid oklch(0.5 0.16 145); transform:rotate(-45deg) translate(2px,-2px);"></div>
+          </div>
+          <div style="font-size:24px; font-weight:700; letter-spacing:-0.01em; margin-bottom:8px;">{{ successTitle }}</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px; line-height:1.5;">{{ successSubtitle }}</div>
+
+          <sc-if value="{{ isSignupSuccess }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ registerDevice }}" disabled="{{ loading }}" style="{{ primaryButtonStyle }}">
+              <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ spinnerStyle }}"></div>
+              </sc-if>
+              <sc-if value="{{ !loading }}" hint-placeholder-val="{{ true }}">
+                Register this device
+              </sc-if>
+            </button>
+          </sc-if>
+
+          <sc-if value="{{ !isSignupSuccess }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ goSignin }}" style="{{ primaryButtonStyle }}">Continue to sign in</button>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDeviceRegistered }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:sw-fade-in 0.35s ease; text-align:center; padding:20px 0;">
+          <div style="width:56px; height:56px; border-radius:50%; background:oklch(0.72 0.17 145 / 0.14); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+            <div style="width:22px; height:12px; border-left:3px solid oklch(0.5 0.16 145); border-bottom:3px solid oklch(0.5 0.16 145); transform:rotate(-45deg) translate(2px,-2px);"></div>
+          </div>
+          <div style="font-size:24px; font-weight:700; letter-spacing:-0.01em; margin-bottom:8px;">Device registered</div>
+          <div style="font-size:14.5px; color:oklch(0.5 0.02 85); margin-bottom:28px; line-height:1.5;">This device has been added to your account. Sign in to continue.</div>
+          <button onClick="{{ goSignin }}" style="{{ primaryButtonStyle }}">Sign in</button>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    screen: 'signin', // signin | signup | forgot | otp | reset | success | device_registered
+    otpContext: null, // 'signup' | 'forgot'
+    email: '',
+    password: '',
+    confirmPassword: '',
+    name: '',
+    phone: '',
+    countryCode: '+1',
+    otp: ['', '', '', '', '', ''],
+    errors: {},
+    loading: false,
+    resendSeconds: 30,
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    showPassword: false,
+    showConfirmPassword: false,
+    deviceIcon: 'laptop',
+    isTemporary: false,
+    deviceName: 'Chrome on Windows',
+    tempDuration: '4h',
+  };
+
+  hasExistingTemp = true;
+  existingTempDeviceName = 'Office PC';
+  permanentUsed = 4;
+  permanentLimit = 5;
+
+  componentDidMount() {
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    if (this._timer) clearInterval(this._timer);
+  }
+
+  goSignin = () => this.setState({ screen: 'signin', errors: {}, password: '', confirmPassword: '' });
+  goSignup = () => this.setState({ screen: 'signup', errors: {} });
+  goForgot = () => this.setState({ screen: 'forgot', errors: {} });
+
+  backFromOtp = () => {
+    const { otpContext } = this.state;
+    if (this._timer) clearInterval(this._timer);
+    this.setState({ screen: otpContext === 'signup' ? 'signup' : 'forgot', errors: {}, otp: ['', '', '', '', '', ''] });
+  };
+
+  onEmailChange = (e) => this.setState({ email: e.target.value, errors: { ...this.state.errors, email: null } });
+  onPasswordChange = (e) => this.setState({ password: e.target.value, errors: { ...this.state.errors, password: null } });
+  onConfirmPasswordChange = (e) => this.setState({ confirmPassword: e.target.value, errors: { ...this.state.errors, confirmPassword: null } });
+  onNameChange = (e) => this.setState({ name: e.target.value, errors: { ...this.state.errors, name: null } });
+  onPhoneChange = (e) => this.setState({ phone: e.target.value.replace(/[^0-9\s-]/g, ''), errors: { ...this.state.errors, phone: null } });
+  onCountryCodeChange = (e) => this.setState({ countryCode: e.target.value });
+  toggleShowPassword = () => this.setState((s) => ({ showPassword: !s.showPassword }));
+  toggleShowConfirmPassword = () => this.setState((s) => ({ showConfirmPassword: !s.showConfirmPassword }));
+
+  validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  startResendTimer() {
+    if (this._timer) clearInterval(this._timer);
+    this.setState({ resendSeconds: 30 });
+    this._timer = setInterval(() => {
+      this.setState((s) => {
+        if (s.resendSeconds <= 1) {
+          clearInterval(this._timer);
+          return { resendSeconds: 0 };
+        }
+        return { resendSeconds: s.resendSeconds - 1 };
+      });
+    }, 1000);
+  }
+
+  submitSignin = () => {
+    const { email, password } = this.state;
+    const errors = {};
+    if (!email) errors.email = 'Email is required.';
+    else if (!this.validateEmail(email)) errors.email = 'Enter a valid email address.';
+    if (!password) errors.password = 'Password is required.';
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+
+    this.setState({ loading: true, errors: {} });
+    setTimeout(() => {
+      // Simulated: incorrect password demo path
+      if (password === 'wrong') {
+        this.setState({ loading: false, errors: { password: 'Incorrect email or password.' } });
+      } else {
+        this.setState({ loading: false, screen: 'device_choice', isTemporary: false });
+      }
+    }, 1100);
+  };
+
+  selectDeviceIcon = (icon) => () => this.setState({ deviceIcon: icon });
+  toggleTemporary = () => this.setState((s) => ({ isTemporary: !s.isTemporary }));
+  onDeviceNameChange = (e) => this.setState({ deviceName: e.target.value, errors: { ...this.state.errors, deviceName: null } });
+  onTempDurationChange = (e) => this.setState({ tempDuration: e.target.value });
+
+  confirmDeviceChoice = () => {
+    const { deviceName } = this.state;
+    if (!deviceName.trim()) {
+      this.setState({ errors: { deviceName: 'Give this device a name.' } });
+      return;
+    }
+    this.setState({ loading: true, errors: {} });
+    setTimeout(() => {
+      this.setState({ loading: false, screen: 'device_choice_done' });
+    }, 1000);
+  };
+
+  submitSignup = () => {
+    const { name, email, phone, password, confirmPassword } = this.state;
+    const errors = {};
+    if (!name.trim()) errors.name = 'Full name is required.';
+    if (!email) errors.email = 'Email is required.';
+    else if (!this.validateEmail(email)) errors.email = 'Enter a valid email address.';
+    if (!phone.trim()) errors.phone = 'Phone number is required.';
+    else if (phone.replace(/\D/g, '').length < 7) errors.phone = 'Enter a valid phone number.';
+    if (!password) errors.password = 'Password is required.';
+    else if (password.length < 8) errors.password = 'Use at least 8 characters.';
+    if (confirmPassword !== password) errors.confirmPassword = 'Passwords do not match.';
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+
+    this.setState({ loading: true, errors: {} });
+    setTimeout(() => {
+      this.setState({ loading: false, screen: 'otp', otpContext: 'signup', otp: ['', '', '', '', '', ''] });
+      this.startResendTimer();
+    }, 1100);
+  };
+
+  submitForgot = () => {
+    const { email } = this.state;
+    const errors = {};
+    if (!email) errors.email = 'Email is required.';
+    else if (!this.validateEmail(email)) errors.email = 'Enter a valid email address.';
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+
+    this.setState({ loading: true, errors: {} });
+    setTimeout(() => {
+      this.setState({ loading: false, screen: 'otp', otpContext: 'forgot', otp: ['', '', '', '', '', ''] });
+      this.startResendTimer();
+    }, 1100);
+  };
+
+  handleOtpChange = (index) => (e) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    const digit = raw.slice(-1);
+    const otp = [...this.state.otp];
+    otp[index] = digit;
+    this.setState({ otp, errors: { ...this.state.errors, otp: null } });
+    if (digit && index < 5) {
+      const next = document.getElementById('sw-otp-' + (index + 1));
+      if (next) next.focus();
+    }
+  };
+
+  resendOtp = () => {
+    if (this.state.resendSeconds > 0) return;
+    this.startResendTimer();
+  };
+
+  submitOtp = () => {
+    const code = this.state.otp.join('');
+    if (code.length < 6) {
+      this.setState({ errors: { otp: 'Enter the full 6-digit code.' } });
+      return;
+    }
+    this.setState({ loading: true, errors: {} });
+    setTimeout(() => {
+      if (code === '000000') {
+        this.setState({ loading: false, errors: { otp: "That code doesn't look right." } });
+        return;
+      }
+      if (this._timer) clearInterval(this._timer);
+      if (this.state.otpContext === 'signup') {
+        this.setState({ loading: false, screen: 'success' });
+      } else {
+        this.setState({ loading: false, screen: 'reset', password: '', confirmPassword: '' });
+      }
+    }, 1000);
+  };
+
+  registerDevice = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.setState({ loading: false, screen: 'device_registered' });
+    }, 1000);
+  };
+
+  submitReset = () => {
+    const { password, confirmPassword } = this.state;
+    const errors = {};
+    if (!password) errors.password = 'Password is required.';
+    else if (password.length < 8) errors.password = 'Use at least 8 characters.';
+    if (confirmPassword !== password) errors.confirmPassword = 'Passwords do not match.';
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+
+    this.setState({ loading: true, errors: {} });
+    setTimeout(() => {
+      this.setState({ loading: false, screen: 'success' });
+    }, 1100);
+  };
+
+  renderVals() {
+    const { screen, otpContext, email, password, confirmPassword, name, phone, countryCode, otp, errors, loading, resendSeconds, viewportWidth, showPassword, showConfirmPassword, deviceIcon, isTemporary, deviceName, tempDuration } = this.state;
+    const isDesktop = viewportWidth >= 900;
+
+    const fieldBase = {
+      width: '100%',
+      boxSizing: 'border-box',
+      padding: '11px 14px',
+      fontSize: '14.5px',
+      fontFamily: 'Inter, sans-serif',
+      borderRadius: '10px',
+      border: '1.5px solid oklch(0.88 0.008 85)',
+      outline: 'none',
+      background: 'oklch(0.995 0.002 85)',
+      color: 'oklch(0.22 0.015 85)',
+      transition: 'border-color 0.15s ease',
+    };
+    const fieldStyle = (key) => ({
+      ...fieldBase,
+      borderColor: errors[key] ? 'oklch(0.58 0.19 25)' : 'oklch(0.88 0.008 85)',
+    });
+
+    const eyeButtonStyle = {
+      position: 'absolute',
+      right: '4px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: '32px',
+      height: '32px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'oklch(0.55 0.02 85)',
+      cursor: 'pointer',
+      borderRadius: '7px',
+    };
+    const passwordInputType = showPassword ? 'text' : 'password';
+    const confirmPasswordInputType = showConfirmPassword ? 'text' : 'password';
+
+    const primaryButtonStyle = {
+      width: '100%',
+      marginTop: '24px',
+      padding: '12px 16px',
+      fontSize: '15px',
+      fontWeight: 600,
+      fontFamily: 'Inter, sans-serif',
+      color: 'oklch(0.99 0.003 85)',
+      background: loading ? 'oklch(0.62 0.14 250 / 0.7)' : 'oklch(0.55 0.15 250)',
+      border: 'none',
+      borderRadius: '10px',
+      cursor: loading ? 'default' : 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '46px',
+      boxShadow: loading ? 'none' : '0 1px 2px oklch(0.55 0.15 250 / 0.25)',
+    };
+
+    const errorTextStyle = {
+      fontSize: '12.5px',
+      color: 'oklch(0.55 0.19 25)',
+      marginTop: '6px',
+      fontWeight: 500,
+    };
+
+    const backLinkStyle = {
+      fontSize: '13.5px',
+      fontWeight: 600,
+      color: 'oklch(0.5 0.02 85)',
+      cursor: 'pointer',
+      marginBottom: '18px',
+      display: 'inline-block',
+    };
+
+    const spinnerStyle = {
+      width: '18px',
+      height: '18px',
+      borderRadius: '50%',
+      border: '2.5px solid oklch(0.99 0.003 85 / 0.35)',
+      borderTopColor: 'oklch(0.99 0.003 85)',
+      animation: 'sw-spin 0.7s linear infinite',
+    };
+
+    const mobileLogoStyle = {
+      display: isDesktop ? 'none' : 'flex',
+      alignItems: 'center',
+      gap: '9px',
+      marginBottom: '28px',
+      justifyContent: 'center',
+    };
+
+    const brandPanelStyle = {
+      display: isDesktop ? 'flex' : 'none',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      width: '42%',
+      maxWidth: '480px',
+      minHeight: '100vh',
+      padding: '48px 56px',
+      boxSizing: 'border-box',
+      background: 'linear-gradient(160deg, oklch(0.32 0.05 255), oklch(0.24 0.045 260))',
+    };
+
+    const otpBoxStyle = (hasError) => ({
+      width: '100%',
+      aspectRatio: '1',
+      textAlign: 'center',
+      fontSize: '20px',
+      fontWeight: 700,
+      fontFamily: 'Inter, sans-serif',
+      borderRadius: '10px',
+      border: '1.5px solid ' + (hasError ? 'oklch(0.58 0.19 25)' : 'oklch(0.88 0.008 85)'),
+      outline: 'none',
+      background: 'oklch(0.995 0.002 85)',
+      color: 'oklch(0.22 0.015 85)',
+      boxSizing: 'border-box',
+    });
+
+    const countryCodeFieldStyle = {
+      ...fieldBase,
+      width: 'auto',
+      flexShrink: 0,
+      paddingRight: '8px',
+      borderColor: 'oklch(0.88 0.008 85)',
+      cursor: 'pointer',
+    };
+    const phoneFieldStyle = fieldStyle('phone');
+    const countryOptions = [
+      { code: '+1', label: '\ud83c\uddfa\ud83c\uddf8 +1' },
+      { code: '+44', label: '\ud83c\uddec\ud83c\udde7 +44' },
+      { code: '+91', label: '\ud83c\uddee\ud83c\uddf3 +91' },
+      { code: '+61', label: '\ud83c\udde6\ud83c\uddfa +61' },
+      { code: '+81', label: '\ud83c\uddef\ud83c\uddf5 +81' },
+      { code: '+49', label: '\ud83c\udde9\ud83c\uddea +49' },
+    ];
+
+    const otpBoxes = otp.map((value, i) => ({
+      value,
+      id: 'sw-otp-' + i,
+      onChange: this.handleOtpChange(i),
+      style: otpBoxStyle(!!errors.otp),
+    }));
+
+    const resendReady = resendSeconds <= 0;
+    const resendTimerLabel = '0:' + String(resendSeconds).padStart(2, '0');
+
+    const isTemporarySelected = isTemporary;
+
+    const iconTileBase = {
+      width: '44px',
+      height: '44px',
+      borderRadius: '10px',
+      border: '1.5px solid oklch(0.88 0.008 85)',
+      background: 'oklch(0.995 0.002 85)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      flexShrink: 0,
+    };
+    const iconDefs = [
+      { id: 'laptop', flag: 'isLaptop' },
+      { id: 'desktop', flag: 'isDesktop' },
+      { id: 'phone', flag: 'isPhone' },
+      { id: 'tablet', flag: 'isTablet' },
+      { id: 'browser', flag: 'isBrowser' },
+    ];
+    const deviceIconOptions = iconDefs.map((def) => {
+      const selected = deviceIcon === def.id;
+      const tileStyle = {
+        ...iconTileBase,
+        borderColor: selected ? 'oklch(0.55 0.15 250)' : 'oklch(0.88 0.008 85)',
+        background: selected ? 'oklch(0.55 0.15 250 / 0.08)' : 'oklch(0.995 0.002 85)',
+      };
+      return {
+        id: def.id,
+        [def.flag]: true,
+        isLaptop: def.id === 'laptop',
+        isDesktop: def.id === 'desktop',
+        isPhone: def.id === 'phone',
+        isTablet: def.id === 'tablet',
+        isBrowser: def.id === 'browser',
+        strokeColor: selected ? 'oklch(0.5 0.14 250)' : 'oklch(0.45 0.02 260)',
+        tileStyle,
+        onSelect: this.selectDeviceIcon(def.id),
+      };
+    });
+
+    const toggleTrackStyle = {
+      width: '42px',
+      height: '24px',
+      borderRadius: '999px',
+      background: isTemporary ? 'oklch(0.55 0.15 250)' : 'oklch(0.85 0.01 85)',
+      position: 'relative',
+      cursor: 'pointer',
+      flexShrink: 0,
+      transition: 'background 0.15s ease',
+    };
+    const toggleThumbStyle = {
+      width: '18px',
+      height: '18px',
+      borderRadius: '50%',
+      background: 'oklch(0.99 0.003 85)',
+      position: 'absolute',
+      top: '3px',
+      left: isTemporary ? '21px' : '3px',
+      transition: 'left 0.15s ease',
+      boxShadow: '0 1px 2px oklch(0.2 0.02 85 / 0.25)',
+    };
+
+    const deviceNameFieldStyle = fieldStyle('deviceName');
+    const tempDurationFieldStyle = { ...fieldBase, cursor: 'pointer' };
+    const durationOptions = [
+      { value: '1h', label: '1 hour' },
+      { value: '4h', label: '4 hours' },
+      { value: '24h', label: '24 hours' },
+    ];
+    const detectedDeviceLabel = 'this browser';
+
+    const deviceChoiceDoneTitle = !isTemporary ? 'Device registered' : 'Temporary access granted';
+    const deviceChoiceDoneSubtitle = !isTemporary
+      ? `"${deviceName}" now has full access to your account.`
+      : `"${deviceName}" can send and receive text and files for the next ${durationOptions.find(o => o.value === tempDuration)?.label.toLowerCase() || 'session'}.`;
+
+    const primaryButtonAnchorStyle = { ...primaryButtonStyle, textDecoration: 'none', boxSizing: 'border-box' };
+
+    const successTitle = otpContext === 'signup' ? 'Account verified' : 'Password updated';
+    const successSubtitle = otpContext === 'signup'
+      ? "You're all set. Register this device to finish setup."
+      : 'Your password has been changed. Sign in with your new password.';
+
+    return {
+      isSignin: screen === 'signin',
+      isSignup: screen === 'signup',
+      isForgot: screen === 'forgot',
+      isOtp: screen === 'otp',
+      isReset: screen === 'reset',
+      isSuccess: screen === 'success',
+      isSignupSuccess: screen === 'success' && otpContext === 'signup',
+      isDeviceRegistered: screen === 'device_registered',
+      isDeviceChoice: screen === 'device_choice',
+      isDeviceChoiceDone: screen === 'device_choice_done',
+      email, password, confirmPassword, name, phone, countryCode,
+      errors, loading,
+      countryCodeFieldStyle,
+      phoneFieldStyle,
+      countryOptions,
+      eyeButtonStyle,
+      passwordInputType,
+      confirmPasswordInputType,
+      showPassword,
+      showConfirmPassword,
+      brandPanelStyle,
+      mobileLogoStyle,
+      emailFieldStyle: fieldStyle('email'),
+      passwordFieldStyle: { ...fieldStyle('password'), paddingRight: '42px' },
+      confirmFieldStyle: { ...fieldStyle('confirmPassword'), paddingRight: '42px' },
+      nameFieldStyle: fieldStyle('name'),
+      primaryButtonStyle,
+      errorTextStyle,
+      backLinkStyle,
+      spinnerStyle,
+      otpBoxes,
+      resendReady,
+      resendTimerLabel,
+      successTitle,
+      successSubtitle,
+      deviceName, tempDuration,
+      isTemporarySelected,
+      deviceIconOptions,
+      toggleTrackStyle, toggleThumbStyle,
+      deviceNameFieldStyle, tempDurationFieldStyle,
+      durationOptions, detectedDeviceLabel,
+      permanentUsed: this.permanentUsed, permanentLimit: this.permanentLimit,
+      hasExistingTemp: this.hasExistingTemp, existingTempDeviceName: this.existingTempDeviceName,
+      deviceChoiceDoneTitle, deviceChoiceDoneSubtitle,
+      primaryButtonAnchorStyle,
+      toggleTemporary: this.toggleTemporary,
+      onDeviceNameChange: this.onDeviceNameChange,
+      onTempDurationChange: this.onTempDurationChange,
+      confirmDeviceChoice: this.confirmDeviceChoice,
+      onEmailChange: this.onEmailChange,
+      onPasswordChange: this.onPasswordChange,
+      onConfirmPasswordChange: this.onConfirmPasswordChange,
+      onNameChange: this.onNameChange,
+      onPhoneChange: this.onPhoneChange,
+      onCountryCodeChange: this.onCountryCodeChange,
+      toggleShowPassword: this.toggleShowPassword,
+      toggleShowConfirmPassword: this.toggleShowConfirmPassword,
+      goSignin: this.goSignin,
+      goSignup: this.goSignup,
+      goForgot: this.goForgot,
+      backFromOtp: this.backFromOtp,
+      submitSignin: this.submitSignin,
+      submitSignup: this.submitSignup,
+      submitForgot: this.submitForgot,
+      submitOtp: this.submitOtp,
+      submitReset: this.submitReset,
+      registerDevice: this.registerDevice,
+      resendOtp: this.resendOtp,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

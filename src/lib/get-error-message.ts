@@ -12,3 +12,12 @@ export const getErrorMessage = (error: unknown, fallback = "Something went wrong
 
   return fallback;
 };
+
+/** Machine-readable error code from the API envelope, if present. */
+export const getErrorCode = (error: unknown): string | undefined => {
+  if (isAxiosError<ApiErrorResponse>(error)) {
+    return error.response?.data.code;
+  }
+
+  return undefined;
+};

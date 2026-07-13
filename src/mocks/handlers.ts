@@ -9,11 +9,30 @@ import type {
   VerifyOtpPayload,
   VerifyOtpResponse,
 } from "@/features/auth/types";
+import type {
+  Device,
+  DeviceListResponse,
+  RegisterDeviceResponse,
+} from "@/features/devices/types";
 import type { ApiSuccessResponse } from "@/types/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const MOCK_OTP = "123456";
+
+export const mockDevice = (overrides: Partial<Device> = {}): Device => ({
+  id: "device-1",
+  name: "Work Laptop",
+  platform: "chrome_extension",
+  kind: "permanent",
+  isRevoked: false,
+  isActive: true,
+  isExpired: false,
+  lastKnownStatus: "yellow",
+  lastSeenAt: new Date().toISOString(),
+  createdAt: new Date().toISOString(),
+  ...overrides,
+});
 
 export const handlers = [
   http.post(`${API_BASE_URL}/auth/login`, async ({ request }) => {
@@ -148,5 +167,73 @@ export const handlers = [
       { success: true, message: "Password reset successfully" },
       { status: 200 },
     );
+  }),
+
+  http.get(`${API_BASE_URL}/devices`, () => {
+    const response: ApiSuccessResponse<DeviceListResponse> = {
+      success: true,
+      message: "Devices fetched successfully",
+      data: { devices: [] },
+    };
+    return HttpResponse.json(response, { status: 200 });
+  }),
+
+  http.post(`${API_BASE_URL}/devices/register`, async ({ request }) => {
+    const body = (await request.json()) as {
+      name: string;
+      kind: "permanent" | "temporary";
+      iconCode?: string;
+    };
+
+    // Mirrors the backend: iconCode is required (1-32 chars after trim).
+    if (!body.iconCode?.trim()) {
+      return HttpResponse.json(
+        { success: false, message: "Validation failed: iconCode: Icon code is required" },
+        { status: 400 },
+      );
+    }
+
+    const response: ApiSuccessResponse<RegisterDeviceResponse> = {
+      success: true,
+      message: "Device registered successfully",
+      data: {
+        device: mockDevice({ name: body.name, kind: body.kind, iconCode: body.iconCode }),
+        accessToken: "device-access-token",
+        refreshToken: "device-refresh-token",
+      },
+    };
+    return HttpResponse.json(response, { status: 201 });
+  }),
+
+  http.patch(`${API_BASE_URL}/devices/:id`, async ({ request, params }) => {
+    const body = (await request.json()) as { name?: string; iconCode?: string | null };
+
+    if (body.name === undefined && body.iconCode === undefined) {
+      return HttpResponse.json(
+        { success: false, message: "At least one of name or iconCode must be provided" },
+        { status: 400 },
+      );
+    }
+    if (body.iconCode !== undefined && body.iconCode !== null && !body.iconCode.trim()) {
+      return HttpResponse.json(
+        { success: false, message: "Validation failed: iconCode: Icon code is required" },
+        { status: 400 },
+      );
+    }
+
+    const device = mockDevice({ id: String(params.id) });
+    if (body.name !== undefined) device.name = body.name;
+    if (body.iconCode !== undefined) {
+      // `null` clears the code; the backend then omits the key entirely.
+      if (body.iconCode === null) delete device.iconCode;
+      else device.iconCode = body.iconCode;
+    }
+
+    const response: ApiSuccessResponse<{ device: Device }> = {
+      success: true,
+      message: "Device updated successfully",
+      data: { device },
+    };
+    return HttpResponse.json(response, { status: 200 });
   }),
 ];

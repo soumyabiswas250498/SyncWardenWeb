@@ -1,34 +1,30 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { paths } from "@/routes/paths";
 import { useAuthStore } from "@/features/auth/store/auth-store";
+import { AppShell } from "@/features/devices/components/app-shell";
 
 const DashboardPage = () => {
-  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const clearSession = useAuthStore((state) => state.clearSession);
-
-  const handleLogout = () => {
-    clearSession();
-    void navigate("/signin", { replace: true });
-  };
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-2xl flex-col gap-4 p-4">
+    <AppShell>
       <Card>
         <CardHeader>
           <CardTitle>Welcome{user ? `, ${user.name}` : ""}</CardTitle>
           <CardDescription>
-            This is a placeholder dashboard. Device list, presence, and transfer UI will live here.
+            This browser is registered as a device. Manage your devices, presence, and transfers
+            from here.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="outline" onClick={handleLogout}>
-            Log out
+          <Button asChild>
+            <Link to={paths.devices}>Manage devices</Link>
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </AppShell>
   );
 };
 

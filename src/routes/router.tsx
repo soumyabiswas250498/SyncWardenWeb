@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { paths } from "./paths";
 import { ProtectedRoute } from "./protected-route";
+import { RequireDevice } from "./require-device";
 import { RootLayout } from "./root-layout";
 
 export const router = createBrowserRouter([
@@ -34,13 +35,43 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: paths.registerDevice,
+        lazy: async () => {
+          const { default: RegisterDevicePage } = await import("@/pages/register-device-page");
+          return {
+            Component: () => (
+              <ProtectedRoute>
+                <RegisterDevicePage />
+              </ProtectedRoute>
+            ),
+          };
+        },
+      },
+      {
         path: paths.dashboard,
         lazy: async () => {
           const { default: DashboardPage } = await import("@/pages/dashboard-page");
           return {
             Component: () => (
               <ProtectedRoute>
-                <DashboardPage />
+                <RequireDevice>
+                  <DashboardPage />
+                </RequireDevice>
+              </ProtectedRoute>
+            ),
+          };
+        },
+      },
+      {
+        path: paths.devices,
+        lazy: async () => {
+          const { default: DevicesPage } = await import("@/pages/devices-page");
+          return {
+            Component: () => (
+              <ProtectedRoute>
+                <RequireDevice>
+                  <DevicesPage />
+                </RequireDevice>
               </ProtectedRoute>
             ),
           };
