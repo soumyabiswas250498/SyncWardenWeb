@@ -78,6 +78,21 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: paths.messages,
+        lazy: async () => {
+          const { default: MessagesPage } = await import("@/pages/messages-page");
+          return {
+            Component: () => (
+              <ProtectedRoute>
+                <RequireDevice>
+                  <MessagesPage />
+                </RequireDevice>
+              </ProtectedRoute>
+            ),
+          };
+        },
+      },
+      {
         path: paths.notFound,
         lazy: async () => {
           const { default: Component } = await import("@/pages/not-found-page");

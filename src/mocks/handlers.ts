@@ -14,6 +14,12 @@ import type {
   DeviceListResponse,
   RegisterDeviceResponse,
 } from "@/features/devices/types";
+import type {
+  Share,
+  ShareHistoryResponse,
+  ShareListResponse,
+  ShareResponse,
+} from "@/features/shares/types";
 import type { ApiSuccessResponse } from "@/types/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -31,6 +37,18 @@ export const mockDevice = (overrides: Partial<Device> = {}): Device => ({
   lastKnownStatus: "yellow",
   lastSeenAt: new Date().toISOString(),
   createdAt: new Date().toISOString(),
+  ...overrides,
+});
+
+export const mockShare = (overrides: Partial<Share> = {}): Share => ({
+  id: "share-1",
+  userId: "mock-user-id",
+  senderDeviceId: "device-1",
+  contentType: "text",
+  content: "hello from mock",
+  deliveries: [{ deviceId: "device-2", status: "pending" }],
+  createdAt: new Date().toISOString(),
+  expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
   ...overrides,
 });
 
@@ -235,5 +253,62 @@ export const handlers = [
       data: { device },
     };
     return HttpResponse.json(response, { status: 200 });
+  }),
+
+  http.post(`${API_BASE_URL}/shares`, async ({ request }) => {
+    const body = (await request.json()) as { content: string; targetDeviceIds?: string[] };
+
+    // Mirrors the backend's UTF-8 byte limit (SHARE_MAX_CONTENT_BYTES).
+    if (new TextEncoder().encode(body.content).byteLength > 100_000) {
+      return HttpResponse.json(
+        { success: false, message: "Share content is too large", code: "SHARE_TOO_LARGE" },
+        { status: 400 },
+      );
+    }
+
+    const targets = body.targetDeviceIds?.length ? body.targetDeviceIds : ["device-2"];
+    const response: ApiSuccessResponse<ShareResponse> = {
+      success: true,
+      message: "Share created successfully",
+      data: {
+        share: mockShare({
+          id: `share-${Math.random().toString(36).slice(2, 10)}`,
+          content: body.content,
+          deliveries: targets.map((deviceId) => ({ deviceId, status: "pending" as const })),
+        }),
+      },
+    };
+    return HttpResponse.json(response, { status: 201 });
+  }),
+
+  http.get(`${API_BASE_URL}/shares/pending`, () => {
+    const response: ApiSuccessResponse<ShareListResponse> = {
+      success: true,
+      message: "Pending shares fetched successfully",
+      data: { shares: [] },
+    };
+    return HttpResponse.json(response, { status: 200 });
+  }),
+
+  http.get(`${API_BASE_URL}/shares`, () => {
+    const response: ApiSuccessResponse<ShareHistoryResponse> = {
+      success: true,
+      message: "Shares fetched successfully",
+      data: { shares: [], nextCursor: null },
+    };
+    return HttpResponse.json(response, { status: 200 });
+  }),
+
+  http.delete(`${API_BASE_URL}/shares/:id`, ({ params }) => {
+    if (params.id === "missing-share") {
+      return HttpResponse.json(
+        { success: false, message: "Share not found", code: "SHARE_NOT_FOUND" },
+        { status: 404 },
+      );
+    }
+    return HttpResponse.json(
+      { success: true, message: "Share deleted successfully" },
+      { status: 200 },
+    );
   }),
 ];

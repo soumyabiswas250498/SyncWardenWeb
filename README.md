@@ -1,17 +1,17 @@
 # SyncWarden Web
 
-Frontend for SyncWarden, a self-hosted cross-device sync app. Talks to the `backend/` Express API for auth and (eventually) device/signaling, and will own all WebRTC peer-to-peer file transfer logic directly in the browser.
+Frontend for SyncWarden, a self-hosted cross-device sync app. It uses the backend REST API for authentication, device management, and shares; a native WebSocket connection for presence and realtime delivery; and browser WebRTC APIs for direct peer-to-peer file transfer.
 
 ## Stack
 
-- React 19 + TypeScript + Vite (`@vitejs/plugin-react-swc`)
+- React 19 + TypeScript + Vite (`@vitejs/plugin-react`)
 - Tailwind CSS v4 + shadcn/ui (Radix primitives)
 - React Router v7 (data router, lazy-loaded routes)
 - TanStack Query v5 for server state
 - react-hook-form + zod for forms/validation
 - Axios for REST calls, with automatic access-token refresh
 - Zustand for client state (auth session)
-- socket.io-client for realtime device presence / WebRTC signaling
+- Native WebSocket client for realtime presence and text-share delivery
 - Native WebRTC (`RTCPeerConnection` + `RTCDataChannel`) for P2P file transfer
 - Vitest + React Testing Library + MSW for unit/component tests
 - Playwright for e2e tests
@@ -40,10 +40,9 @@ npm run dev
 
 ## Environment variables
 
-| Variable            | Description                                                       |
-| ------------------- | ----------------------------------------------------------------- |
-| `VITE_API_BASE_URL` | REST API base URL, including `/api/v1`                            |
-| `VITE_WS_URL`       | Socket.IO signaling endpoint (backend doesn't implement this yet) |
+| Variable            | Description                                                                  |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL` | REST API base URL, including `/api/v1`; the WebSocket URL is derived from it |
 
 ## Scripts
 
@@ -69,7 +68,7 @@ src/
 ├── features/       # feature modules (api, schemas, store, components)
 ├── components/ui/  # shadcn/ui components (generated -- don't hand-edit)
 ├── lib/            # axios client, query client, shared helpers
-├── realtime/       # Socket.IO signaling client + event types
+├── realtime/       # authenticated WebSocket client, state, and event types
 ├── webrtc/         # RTCPeerConnection + DataChannel file-transfer utilities
 ├── mocks/          # MSW request handlers
 └── test/           # test setup + shared test utilities
@@ -77,7 +76,9 @@ src/
 
 ## Current scope
 
-This scaffold wires a real login flow against the backend's `/api/v1/auth/login`, with token storage, auto-refresh, and a protected `/dashboard` route. Registration, OTP verification, forgot-password, device management, and the realtime/WebRTC modules are structural placeholders -- the backend doesn't implement those endpoints yet (see `backend/README.md` and `AGENTS.md` for the planned build order).
+The frontend includes authentication and account recovery, DPoP-bound browser-device registration, device management, realtime presence, and text sharing with history and delivery acknowledgement. The Messages/realtime work is currently being stabilized. WebRTC peer-connection and RTCDataChannel utilities exist, but Green-mode peer-to-peer file transfer is not yet wired into the UI.
+
+See [PROJECT_UPDATE.md](./PROJECT_UPDATE.md) for the current delivery status, quality snapshot, known gaps, and recommended next milestone.
 
 ## Adding shadcn/ui components
 

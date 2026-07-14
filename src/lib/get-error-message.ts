@@ -19,5 +19,11 @@ export const getErrorCode = (error: unknown): string | undefined => {
     return error.response?.data.code;
   }
 
+  // Local errors that mirror server codes (e.g. client-side SHARE_TOO_LARGE
+  // pre-validation) carry a `code` property so the UI maps them identically.
+  if (error instanceof Error && "code" in error && typeof error.code === "string") {
+    return error.code;
+  }
+
   return undefined;
 };

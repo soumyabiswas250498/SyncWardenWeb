@@ -129,8 +129,11 @@ export const restoreSession = async (): Promise<boolean> => {
   }
 };
 
-/** Tear down a device session the server has invalidated (revoked/expired). */
-const handleDeviceSessionKilled = async (): Promise<void> => {
+/**
+ * Tear down a device session the server has invalidated (revoked/expired).
+ * Also used by the WebSocket client when the socket closes with 4403.
+ */
+export const handleDeviceSessionKilled = async (): Promise<void> => {
   // Keep the key pair — the same browser can re-register — but drop the
   // device id + refresh token and the in-memory session.
   await clearDeviceSession().catch(() => {});

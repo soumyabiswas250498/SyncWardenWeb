@@ -6,5 +6,6 @@ export const paths = {
   dashboard: "/dashboard",
   registerDevice: "/register-device",
   devices: "/devices",
+  messages: "/messages",
   notFound: "*",
 } as const;
